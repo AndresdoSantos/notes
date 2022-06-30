@@ -1,32 +1,32 @@
-import { StyleSheet, Text as RNText } from 'react-native';
+import {
+  StyleSheet,
+  Text as RNText,
+  TextProps as RNTextProps,
+} from 'react-native';
 
-type TextProps = {
+interface TextProps extends RNTextProps {
   content: string;
   size?: number;
-  weight?:
-    | 'normal'
-    | 'bold'
-    | '100'
-    | '200'
-    | '300'
-    | '400'
-    | '500'
-    | '600'
-    | '700'
-    | '800'
-    | '900';
-  color?: '#fff' | '#000';
-};
+  weight?: 'RMRegular' | 'RMBold';
+  color?: '#fff' | '#000' | '#10b981' | '#ef4444';
+}
 
 export function Text({
   content,
   size = 14,
-  weight = 'normal',
+  weight = 'RMRegular',
   color = '#fff',
+  style,
+  ...props
 }: TextProps) {
   return (
     <RNText
-      style={[styles.container, { fontSize: size, fontWeight: weight, color }]}
+      {...props}
+      style={[
+        styles.container,
+        style,
+        { fontSize: size, fontFamily: weight, color },
+      ]}
     >
       {content}
     </RNText>
@@ -35,8 +35,6 @@ export function Text({
 
 const styles = StyleSheet.create({
   container: {
-    color: '#fff',
-    fontFamily: 'RMRegular',
-    letterSpacing: -0.5,
+    letterSpacing: -1.2,
   },
 });

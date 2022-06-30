@@ -1,78 +1,66 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Entypo from '@expo/vector-icons/Entypo';
+import React, { useEffect, useRef } from 'react';
+import { Animated, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { Text } from '../components/Text';
 import { Button } from '../components/Button';
 import { WelcomeMessage } from '../components/WelcomeMessage';
+import { FocusTasks } from '../components/FocusTasks';
+import { HabitTasks } from '../components/HabitsTasks';
+import { AllTasks } from '../components/AllTasks';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 export function App() {
+  const { removeItem } = useAsyncStorage('@313:normalTodo');
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
   const { navigate } = useNavigation();
+
+  const removeAll = () => {
+    removeItem();
+  };
 
   return (
     <>
-      <StatusBar style="auto" />
-      {/**<Header /> */}
+      <StatusBar style="light" />
 
-      <View style={s.header}>
-        <WelcomeMessage />
+      <Animated.View style={[s.floatButton, { opacity: fadeAnim }]}>
+        {/**<Button onPress={() => removeAll()}>
+          <Text content="Remove" color="#000" />
+        </Button> */}
 
         <Button onPress={() => navigate('Create')}>
-          <Text content="I want to do" color="#000" />
+          <Text content="New" color="#000" />
         </Button>
-      </View>
+      </Animated.View>
 
-      <View style={s.tasksContainer}>
-        <Text content="Let's go one by one" size={18} weight="bold" />
+      <WelcomeMessage />
 
-        <View style={s.tasksWrapper}>
-          <View style={s.taskContainer}>
-            <View style={s.taskTitleAndCheckWrapper}>
-              <TouchableOpacity style={s.taskCheck}>
-                <Text content="" />
-              </TouchableOpacity>
+      <FocusTasks />
 
-              <Text content="Nova tarefa" />
-            </View>
-            <Entypo name="dots-three-horizontal" size={12} color="white" />
-          </View>
-        </View>
-      </View>
+      <HabitTasks />
+
+      <AllTasks />
     </>
   );
 }
 
 const s = StyleSheet.create({
-  header: {
+  floatButton: {
+    position: 'absolute',
+    bottom: 40,
+    right: 20,
+    height: 50,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: Dimensions.get('window').width - 40,
-    marginBottom: 20,
-  },
-  tasksContainer: {
-    marginTop: 30,
-  },
-  tasksWrapper: {
-    marginTop: 20,
-  },
-  taskContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: Dimensions.get('window').width - 40,
-  },
-  taskCheck: {
-    height: 20,
-    width: 20,
-    borderRadius: 9999,
-    backgroundColor: '#fff',
-    marginRight: 16,
-  },
-  taskTitleAndCheckWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
 });
